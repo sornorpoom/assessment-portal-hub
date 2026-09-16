@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ศูนย์รวมเครื่องมือวัดและประเมินผลการศึกษา</title>
+  <!-- Tailwind CSS & FontAwesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* ธีมที่ 1: Deep Indigo (ค่าเริ่มต้น) */
+    body.theme-indigo {
+      --bg-main: #f8fafc;
+      --sidebar-bg: #0f172a;
+      --sidebar-hover: #1e293b;
+      --accent-color: #4f46e5;
+      --accent-badge: #e0e7ff;
+      --accent-badge-text: #3730a3;
+    }
+
+    /* ธีมที่ 2: Emerald Green (มรกตศึกษา) */
+    body.theme-emerald {
+      --bg-main: #f0fdf4;
+      --sidebar-bg: #064e3b;
+      --sidebar-hover: #065f46;
+      --accent-color: #059669;
+      --accent-badge: #d1fae5;
+      --accent-badge-text: #065f46;
+    }
+
+    /* ธีมที่ 3: Royal Violet (ม่วงหรูหรา) */
+    body.theme-violet {
+      --bg-main: #faf5ff;
+      --sidebar-bg: #3b0764;
+      --sidebar-hover: #581c87;
+      --accent-color: #9333ea;
+      --accent-badge: #f3e8ff;
+      --accent-badge-text: #6b21a8;
+    }
+
+    /* ขนาดปุ่ม 3 ระดับ */
+    .btn-size-sm .menu-btn {
+      padding: 0.5rem 0.75rem !important;
+      font-size: 0.75rem !important;
+    }
+    .btn-size-sm .menu-icon {
+      font-size: 0.875rem !important;
+    }
+
+    .btn-size-md .menu-btn {
+      padding: 0.75rem 1rem !important;
+      font-size: 0.875rem !important;
+    }
+    .btn-size-md .menu-icon {
+      font-size: 1.125rem !important;
+    }
+
+    .btn-size-lg .menu-btn {
+      padding: 1rem 1.25rem !important;
+      font-size: 1rem !important;
+    }
+    .btn-size-lg .menu-icon {
+      font-size: 1.35rem !important;
+    }
+
+    .sidebar-container {
+      background-color: var(--sidebar-bg);
+      transition: all 0.3s ease;
+    }
+    .active-nav-btn {
+      background-color: var(--accent-color) !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+  </style>
+</head>
+<body class="theme-indigo btn-size-md font-sans antialiased overflow-hidden flex h-screen">
+
+  <!-- ================= แถบเมนูด้านซ้ายมือ (Sidebar) ================= -->
+  <aside class="sidebar-container w-80 flex-shrink-0 flex flex-col justify-between text-white border-r border-slate-700/50 z-20 shadow-xl">
+    <div class="flex flex-col h-full">
+      
+      <!-- หัวข้อระบบ -->
+      <div class="p-5 border-b border-white/10 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-amber-400 text-lg shadow-inner">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-sm leading-tight text-slate-100">ระบบวัดและประเมินผล</h1>
+          <p class="text-[11px] text-slate-400 mt-0.5">Educational Assessment Hub</p>
+        </div>
+      </div>
+
+      <!-- แผงควบคุม: ปรับขนาดปุ่ม & ปรับธีมสี -->
+      <div class="px-5 py-3 border-b border-white/10 bg-black/10 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-1">
+          <span class="text-[11px] text-slate-400 mr-1"><i class="fa-solid fa-text-height"></i> ปุ่ม:</span>
+          <button onclick="setButtonSize('sm')" id="btnSizeSm" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-300 transition">ก-</button>
+          <button onclick="setButtonSize('md')" id="btnSizeMd" class="px-2 py-0.5 rounded bg-white/30 text-white font-bold transition">ก</button>
+          <button onclick="setButtonSize('lg')" id="btnSizeLg" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-300 transition">ก+</button>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <button onclick="setTheme('indigo')" title="ธีมครามกรมท่า" class="w-4 h-4 rounded-full bg-indigo-500 border border-white/40 hover:scale-110 transition"></button>
+          <button onclick="setTheme('emerald')" title="ธีมมรกตศึกษา" class="w-4 h-4 rounded-full bg-emerald-500 border border-white/40 hover:scale-110 transition"></button>
+          <button onclick="setTheme('violet')" title="ธีมม่วงหรูหรา" class="w-4 h-4 rounded-full bg-purple-500 border border-white/40 hover:scale-110 transition"></button>
+        </div>
+      </div>
+
+      <!-- รายการเมนู 5 ลำดับ -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-2" id="menuList">
+        
+        <!-- เมนู 1: คู่มือการใช้งานระบบ (ลำดับแรก) -->
+        <button onclick="switchTab('guide')" id="nav-guide" class="menu-btn active-nav-btn w-full text-left rounded-xl transition flex items-center gap-3.5 group">
+          <i class="menu-icon fa-solid fa-book-open text-amber-400"></i>
+          <div class="flex-1 truncate">
+            <div class="font-bold truncate">คู่มือการใช้งานระบบ</div>
+            <div class="text-[11px] text-slate-300 opacity-80">ดาวน์โหลดแม่แบบ & ทฤษฎี CTT</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+        </button>
+
+        <!-- เมนู 2: ระบบประเมิน IOC -->
+        <button onclick="switchTab('ioc')" id="nav-ioc" class="menu-btn hover:bg-white/10 w-full text-left rounded-xl transition flex items-center gap-3.5 text-slate-300">
+          <i class="menu-icon fa-solid fa-clipboard-check text-teal-400"></i>
+          <div class="flex-1 truncate">
+            <div class="font-bold truncate">1. ระบบประเมิน IOC</div>
+            <div class="text-[11px] text-slate-400 truncate">ความสอดคล้องเชิงเนื้อหา</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs opacity-30"></i>
+        </button>
+
+        <!-- เมนู 3: ระบบวิเคราะห์ข้อสอบปรนัย -->
+        <button onclick="switchTab('objective')" id="nav-objective" class="menu-btn hover:bg-white/10 w-full text-left rounded-xl transition flex items-center gap-3.5 text-slate-300">
+          <i class="menu-icon fa-solid fa-square-poll-vertical text-blue-400"></i>
+          <div class="flex-1 truncate">
+            <div class="font-bold truncate">2. ข้อสอบปรนัย</div>
+            <div class="text-[11px] text-slate-400 truncate">p, r, ตัวลวง, KR-20</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs opacity-30"></i>
+        </button>
+
+        <!-- เมนู 4: ระบบวิเคราะห์ข้อสอบอัตนัย -->
+        <button onclick="switchTab('subjective')" id="nav-subjective" class="menu-btn hover:bg-white/10 w-full text-left rounded-xl transition flex items-center gap-3.5 text-slate-300">
+          <i class="menu-icon fa-solid fa-pen-nib text-amber-400"></i>
+          <div class="flex-1 truncate">
+            <div class="font-bold truncate">3. ข้อสอบอัตนัย</div>
+            <div class="text-[11px] text-slate-400 truncate">ความยาก P, จำแนก D, Rubrics</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs opacity-30"></i>
+        </button>
+
+        <!-- เมนู 5: ระบบวิเคราะห์แบบสอบถาม -->
+        <button onclick="switchTab('questionnaire')" id="nav-questionnaire" class="menu-btn hover:bg-white/10 w-full text-left rounded-xl transition flex items-center gap-3.5 text-slate-300">
+          <i class="menu-icon fa-solid fa-square-poll-horizontal text-violet-400"></i>
+          <div class="flex-1 truncate">
+            <div class="font-bold truncate">4. แบบสอบถาม Rating Scale</div>
+            <div class="text-[11px] text-slate-400 truncate">Likert Scale, r_xy, Cronbach α</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs opacity-30"></i>
+        </button>
+
+      </div>
+
+      <!-- หมายเหตุคำเตือนทางวิชาการ -->
+      <div class="p-4 m-3 rounded-xl bg-amber-500/10 border border-amber-400/30 text-amber-200">
+        <div class="flex items-start gap-2">
+          <i class="fa-solid fa-triangle-exclamation text-amber-400 text-sm mt-0.5"></i>
+          <div class="text-[11px] leading-relaxed">
+            <strong class="text-amber-300 block mb-0.5">หมายเหตุสำคัญ:</strong>
+            ข้อมูลและผลลัพธ์ที่ได้จากการคำนวณทางสถิติของระบบนี้ ต้องนำไปตรวจสอบและพิจารณาร่วมกับผู้เชี่ยวชาญด้านการวัดและประเมินผลการศึกษาอีกครั้งก่อนนำไปใช้อ้างอิงทางการ
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ================= ส่วนแสดงผลหลัก (Main Content Area) ================= -->
+  <main class="flex-1 flex flex-col h-full bg-slate-100 overflow-hidden relative">
+    
+    <!-- Top Action Bar -->
+    <header class="h-14 bg-white border-b border-slate-200 px-6 flex items-center justify-between flex-shrink-0 z-10">
+      <div class="flex items-center gap-2">
+        <span id="currentViewTitle" class="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-book-open text-amber-500"></i> คู่มือการใช้งานระบบและการวัดผล
+        </span>
+      </div>
+      <div class="flex items-center gap-3">
+        <a id="externalLinkBtn" href="#" target="_blank" class="hidden inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition border border-slate-200">
+          <i class="fa-solid fa-up-right-from-square"></i> เปิดในแท็บใหม่
+        </a>
+      </div>
+    </header>
+
+    <!-- Workspace Container -->
+    <div class="flex-1 relative overflow-hidden">
+      
+      <!-- 1. View: หน้าคู่มือการใช้งานระบบ -->
+      <div id="view-guide" class="w-full h-full overflow-y-auto p-8 max-w-5xl mx-auto space-y-8">
+        
+        <!-- Banner ต้อนรับ -->
+        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-6 text-white shadow-md border border-slate-800">
+          <span class="px-3 py-1 bg-amber-400/20 text-amber-300 rounded-full text-xs font-semibold border border-amber-400/30">
+            Assessment & Evaluation Guidelines
+          </span>
+          <h2 class="text-xl font-bold mt-3">คู่มือการใช้งานและโครงสร้างข้อมูลสำหรับ 4 ระบบการวัดและประเมินผล</h2>
+          <p class="text-xs text-slate-300 mt-1.5 leading-relaxed max-w-3xl">
+            เพื่อความถูกต้องแม่นยำในการคำนวณสถิติตามทฤษฎีการทดสอบดั้งเดิม (Classical Test Theory: CTT) คุณครูสามารถศึกษาตัวอย่างโครงสร้างตารางและการจัดวางข้อมูลดิบ (10 แถวตัวอย่าง) พร้อมกดดาวน์โหลดไฟล์แม่แบบตัวอย่าง (.csv) ไปใช้งานได้ทันที
+          </p>
+        </div>
+
+        <!-- กล่องดาวน์โหลดด่วนทั้ง 4 ระบบ (Quick Download Hub) -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-2 text-slate-800 font-bold text-sm mb-3">
+            <i class="fa-solid fa-file-arrow-down text-indigo-600"></i> ศูนย์ดาวน์โหลดไฟล์แม่แบบนำเข้าข้อมูล (Template Download Hub)
+          </div>
+          <p class="text-xs text-slate-500 mb-4">ไฟล์ตัวอย่างทุกไฟล์ถูกเข้ารหัสแบบ UTF-8 with BOM รองรับภาษาไทยสมบูรณ์แบบ สามารถเปิดด้วย Microsoft Excel ได้ทันที</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <button onclick="downloadTemplate('ioc')" class="p-3 bg-teal-50/70 hover:bg-teal-100 text-teal-900 border border-teal-200 rounded-xl text-left transition flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-teal-600 text-white flex items-center justify-center text-sm flex-shrink-0">
+                <i class="fa-solid fa-clipboard-check"></i>
+              </div>
+              <div class="truncate">
+                <div class="font-bold text-xs truncate">1. แม่แบบ IOC</div>
+                <div class="text-[10px] text-teal-700">.csv (ผู้เชี่ยวชาญ)</div>
+              </div>
+            </button>
+
+            <button onclick="downloadTemplate('objective')" class="p-3 bg-blue-50/70 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-xl text-left transition flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-sm flex-shrink-0">
+                <i class="fa-solid fa-square-poll-vertical"></i>
+              </div>
+              <div class="truncate">
+                <div class="font-bold text-xs truncate">2. แม่แบบปรนัย</div>
+                <div class="text-[10px] text-blue-700">.csv (มีแถว KEY)</div>
+              </div>
+            </button>
+
+            <button onclick="downloadTemplate('subjective')" class="p-3 bg-amber-50/70 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-xl text-left transition flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-amber-600 text-white flex items-center justify-center text-sm flex-shrink-0">
+                <i class="fa-solid fa-pen-nib"></i>
+              </div>
+              <div class="truncate">
+                <div class="font-bold text-xs truncate">3. แม่แบบอัตนัย</div>
+                <div class="text-[10px] text-amber-700">.csv (มีแถว MAX)</div>
+              </div>
+            </button>
+
+            <button onclick="downloadTemplate('questionnaire')" class="p-3 bg-violet-50/70 hover:bg-violet-100 text-violet-900 border border-violet-200 rounded-xl text-left transition flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-violet-600 text-white flex items-center justify-center text-sm flex-shrink-0">
+                <i class="fa-solid fa-square-poll-horizontal"></i>
+              </div>
+              <div class="truncate">
+                <div class="font-bold text-xs truncate">4. แม่แบบแบบสอบถาม</div>
+                <div class="text-[10px] text-violet-700">.csv (Likert 1-5)</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- การ์ดสรุปโครงสร้าง 4 ระบบงาน (สูตร & เกณฑ์) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- 1. IOC -->
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-2 hover:border-teal-400 transition">
+            <div class="flex items-center gap-2 text-teal-700 font-bold text-sm">
+              <i class="fa-solid fa-clipboard-check text-base"></i> 1. ระบบประเมินความสอดคล้องเชิงเนื้อหา (IOC)
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              สำหรับผู้เชี่ยวชาญ 3–5 ท่านขึ้นไป ตรวจสอบความเที่ยงตรงเชิงเนื้อหา (Content Validity) รายข้อและภาพรวม
+            </p>
+            <div class="p-2.5 rounded-lg bg-teal-50/60 border border-teal-100 text-[11px] text-teal-900 space-y-1">
+              <div><strong>สูตรคำนวณ:</strong> <span class="font-mono font-semibold text-teal-700">IOC = &Sigma;R / N</span></div>
+              <div class="text-slate-500 text-[10px]">&Sigma;R = ผลรวมคะแนนผู้เชี่ยวชาญ (-1, 0, +1), N = จำนวนผู้เชี่ยวชาญ</div>
+              <div><strong>เกณฑ์ตัดสิน:</strong> ผ่านเกณฑ์ความสอดคล้องเมื่อ <strong class="text-teal-700">IOC &ge; 0.50</strong></div>
+            </div>
+          </div>
+
+          <!-- 2. ปรนัย -->
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-2 hover:border-blue-400 transition">
+            <div class="flex items-center gap-2 text-blue-700 font-bold text-sm">
+              <i class="fa-solid fa-square-poll-vertical text-base"></i> 2. ระบบวิเคราะห์คุณภาพข้อสอบปรนัย (Item & Test)
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              สำหรับข้อสอบเลือกตอบ ให้คะแนนแบบทวิภาค (0, 1) ตัดกลุ่มสูง-ต่ำ 27% พร้อมวิเคราะห์ประสิทธิภาพตัวลวง
+            </p>
+            <div class="p-2.5 rounded-lg bg-blue-50/60 border border-blue-100 text-[11px] text-blue-900 space-y-1">
+              <div><strong>สูตรคำนวณ:</strong> <span class="font-mono font-semibold text-blue-700">p = (R<sub>H</sub> + R<sub>L</sub>) / 2f</span> และ <span class="font-mono font-semibold text-blue-700">r = (R<sub>H</sub> - R<sub>L</sub>) / f</span></div>
+              <div class="text-slate-500 text-[10px]">R<sub>H</sub>, R<sub>L</sub> = จำนวนคนตอบถูกในกลุ่มสูงและต่ำ, f = ขนาดกลุ่ม 27%</div>
+              <div><strong>เกณฑ์ตัดสิน:</strong> ความยากง่าย <strong class="text-blue-700">0.20 &le; p &le; 0.80</strong> | อำนาจจำแนก <strong class="text-blue-700">r &ge; 0.20</strong> | ความเชื่อมั่น <strong class="text-blue-700">KR-20 &ge; 0.70</strong></div>
+            </div>
+          </div>
+
+          <!-- 3. อัตนัย -->
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-2 hover:border-amber-400 transition">
+            <div class="flex items-center gap-2 text-amber-800 font-bold text-sm">
+              <i class="fa-solid fa-pen-nib text-base text-amber-600"></i> 3. ระบบวิเคราะห์ข้อสอบอัตนัย (Subjective Item)
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              สำหรับข้อสอบเขียนตอบ/แสดงวิธีทำ คะแนนรูบริกส์แบบพหุภาค (Polytomous: 0 ถึงคะแนนเต็มแต่ละข้อ)
+            </p>
+            <div class="p-2.5 rounded-lg bg-amber-50/60 border border-amber-100 text-[11px] text-amber-950 space-y-1">
+              <div><strong>สูตรคำนวณ:</strong> <span class="font-mono font-semibold text-amber-800">P = (&Sigma;S<sub>H</sub> + &Sigma;S<sub>L</sub>) / (2f &times; S<sub>max</sub>)</span> และ <span class="font-mono font-semibold text-amber-800">D = (&Sigma;S<sub>H</sub> - &Sigma;S<sub>L</sub>) / (f &times; S<sub>max</sub>)</span></div>
+              <div class="text-slate-500 text-[10px]">&Sigma;S<sub>H</sub>, &Sigma;S<sub>L</sub> = ผลรวมคะแนนกลุ่มสูงและต่ำ, S<sub>max</sub> = คะแนนเต็มข้อนั้น, f = ขนาดกลุ่ม 27%</div>
+              <div><strong>เกณฑ์ตัดสิน:</strong> ความยากง่าย <strong class="text-amber-800">0.20 &le; P &le; 0.80</strong> | อำนาจจำแนก <strong class="text-amber-800">D &ge; 0.20</strong> | ความเชื่อมั่น <strong class="text-amber-800">Cronbach's &alpha; &ge; 0.70</strong></div>
+            </div>
+          </div>
+
+          <!-- 4. แบบสอบถาม -->
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-2 hover:border-violet-400 transition">
+            <div class="flex items-center gap-2 text-violet-700 font-bold text-sm">
+              <i class="fa-solid fa-square-poll-horizontal text-base"></i> 4. ระบบวิเคราะห์แบบสอบถาม (Rating Scale)
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              สำหรับแบบสอบถามมาตราส่วนประมาณค่า (Likert Scale 1–5) วิเคราะห์ระดับความคิดเห็นและโครงสร้างมาตรวัด
+            </p>
+            <div class="p-2.5 rounded-lg bg-violet-50/60 border border-violet-100 text-[11px] text-violet-900 space-y-1">
+              <div><strong>สถิติหลัก:</strong> ค่าเฉลี่ย (<span class="font-bold">&macr;X</span>), ส่วนเบี่ยงเบนมาตรฐาน (<span class="font-bold">S.D.</span>) และอำนาจจำแนก <span class="font-mono font-semibold text-violet-700">r<sub>xy</sub></span> (Item-Total Correlation)</div>
+              <div class="text-slate-500 text-[10px]">วิเคราะห์ความสอดคล้องระหว่างข้อคำถามกับคะแนนรวมทั้งฉบับ (Pearson Correlation)</div>
+              <div><strong>เกณฑ์ตัดสิน:</strong> อำนาจจำแนก <strong class="text-violet-700">r<sub>xy</sub> &ge; 0.20</strong> | ความเชื่อมั่น <strong class="text-violet-700">Cronbach's &alpha; &ge; 0.70</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= ตัวอย่างตารางข้อมูลแยกรายระบบ (10 แถว พร้อมปุ่มดาวน์โหลดเฉพาะระบบ) ================= -->
+        <div class="space-y-6">
+          <div class="border-b border-slate-200 pb-2">
+            <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-table text-indigo-600"></i> ตัวอย่างรูปแบบตารางข้อมูลจริง (Data Structure Samples: 10 Rows)
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">ใช้เป็นต้นแบบในการพิมพ์ข้อมูลลง Google Sheets หรือบันทึกเป็นไฟล์ Excel (.xlsx) / CSV</p>
+          </div>
+
+          <!-- ตัวอย่าง 1: IOC -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="bg-teal-50/80 px-4 py-3 border-b border-teal-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <span class="text-xs font-bold text-teal-900 flex items-center gap-2">
+                <i class="fa-solid fa-clipboard-check text-teal-600"></i> ตัวอย่างตารางระบบที่ 1: การประเมินค่า IOC (ผู้เชี่ยวชาญ 9 ท่าน &times; ข้อสอบ 6 ข้อ)
+              </span>
+              <button onclick="downloadTemplate('ioc')" class="inline-flex items-center gap-1.5 px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+                <i class="fa-solid fa-download"></i> ดาวน์โหลดแม่แบบระบบ IOC (.csv)
+              </button>
+            </div>
+            <div class="overflow-x-auto p-4">
+              <table class="w-full text-xs text-left border-collapse border border-slate-200 font-mono">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-700 font-sans">
+                    <th class="border border-slate-200 p-2 text-center w-28">ExpertName</th>
+                    <th class="border border-slate-200 p-2 text-center">Item1</th>
+                    <th class="border border-slate-200 p-2 text-center">Item2</th>
+                    <th class="border border-slate-200 p-2 text-center">Item3</th>
+                    <th class="border border-slate-200 p-2 text-center">Item4</th>
+                    <th class="border border-slate-200 p-2 text-center">Item5</th>
+                    <th class="border border-slate-200 p-2 text-center">Item6</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-600 font-sans">
+                  <tr><td class="border border-slate-200 p-2 text-center font-semibold">ผู้เชี่ยวชาญคนที่ 1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-slate-500 font-bold">0</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-semibold">ผู้เชี่ยวชาญคนที่ 2</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-slate-500 font-bold">0</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-rose-600 font-bold">-1</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-semibold">ผู้เชี่ยวชาญคนที่ 3</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-slate-500 font-bold">0</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-semibold">ผู้เชี่ยวชาญคนที่ 4</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-slate-500 font-bold">0</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-slate-500 font-bold">0</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-rose-600 font-bold">-1</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-semibold">ผู้เชี่ยวชาญคนที่ 5</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-slate-500 font-bold">0</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td></tr>
+                  <tr class="bg-slate-50/50"><td class="border border-slate-200 p-2 text-center font-semibold text-slate-500">ผู้เชี่ยวชาญคนที่ 6</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-slate-500 font-bold">0</td></tr>
+                  <tr class="bg-slate-50/50"><td class="border border-slate-200 p-2 text-center font-semibold text-slate-500">ผู้เชี่ยวชาญคนที่ 7</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-slate-500 font-bold">0</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-rose-600 font-bold">-1</td></tr>
+                  <tr class="bg-slate-50/50"><td class="border border-slate-200 p-2 text-center font-semibold text-slate-500">ผู้เชี่ยวชาญคนที่ 8</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-slate-500 font-bold">0</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-slate-500 font-bold">0</td></tr>
+                  <tr class="bg-slate-50/50"><td class="border border-slate-200 p-2 text-center font-semibold text-slate-500">ผู้เชี่ยวชาญคนที่ 9</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td><td class="border border-slate-200 p-2 text-center text-emerald-600 font-bold">+1</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="px-4 py-2.5 bg-slate-50 text-[11px] text-slate-500 border-t border-slate-100 flex items-center justify-between">
+              <span>* คอลัมน์แรกเป็นชื่อผู้เชี่ยวชาญ คอลัมน์ถัดไปเป็นรหัสข้อคำถาม โดยระบุ +1 (สอดคล้อง), 0 (ไม่แน่ใจ), หรือ -1 (ไม่สอดคล้อง)</span>
+            </div>
+          </div>
+
+          <!-- ตัวอย่าง 2: ปรนัย -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="bg-blue-50/80 px-4 py-3 border-b border-blue-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <span class="text-xs font-bold text-blue-900 flex items-center gap-2">
+                <i class="fa-solid fa-square-poll-vertical text-blue-600"></i> ตัวอย่างตารางระบบที่ 2: ข้อสอบปรนัย (แถวแรกต้องเป็น KEY เฉลย)
+              </span>
+              <button onclick="downloadTemplate('objective')" class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+                <i class="fa-solid fa-download"></i> ดาวน์โหลดแม่แบบระบบปรนัย (.csv)
+              </button>
+            </div>
+            <div class="overflow-x-auto p-4">
+              <table class="w-full text-xs text-left border-collapse border border-slate-200 font-mono">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-700 font-sans">
+                    <th class="border border-slate-200 p-2 text-center w-28">StudentID</th>
+                    <th class="border border-slate-200 p-2 text-center">Item1</th>
+                    <th class="border border-slate-200 p-2 text-center">Item2</th>
+                    <th class="border border-slate-200 p-2 text-center">Item3</th>
+                    <th class="border border-slate-200 p-2 text-center">Item4</th>
+                    <th class="border border-slate-200 p-2 text-center">Item5</th>
+                    <th class="border border-slate-200 p-2 text-center">Item6</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-600 font-sans">
+                  <tr class="bg-amber-50/70 font-bold text-indigo-700"><td class="border border-slate-200 p-2 text-center">KEY</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ข</td><td class="border border-slate-200 p-2 text-center">ค</td><td class="border border-slate-200 p-2 text-center">ง</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ข</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD001</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ข</td><td class="border border-slate-200 p-2 text-center">ค</td><td class="border border-slate-200 p-2 text-center">ง</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ข</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD002</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ข</td><td class="border border-slate-200 p-2 text-center">ค</td><td class="border border-slate-200 p-2 text-center">ง</td><td class="border border-slate-200 p-2 text-center">ข</td><td class="border border-slate-200 p-2 text-center">ข</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD003</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ข</td><td class="border border-slate-200 p-2 text-center">ง</td><td class="border border-slate-200 p-2 text-center">ง</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ค</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD004</td><td class="border border-slate-200 p-2 text-center">ง</td><td class="border border-slate-200 p-2 text-center">ข</td><td class="border border-slate-200 p-2 text-center">ค</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ง</td><td class="border border-slate-200 p-2 text-center">ข</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD005</td><td class="border border-slate-200 p-2 text-center">ค</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ข</td><td class="border border-slate-200 p-2 text-center">ง</td><td class="border border-slate-200 p-2 text-center">ค</td><td class="border border-slate-200 p-2 text-center">ก</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD006</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ข</td><td class="border border-slate-200 p-2 text-center">ค</td><td class="border border-slate-200 p-2 text-center">ง</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ข</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD007</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ข</td><td class="border border-slate-200 p-2 text-center">ค</td><td class="border border-slate-200 p-2 text-center">ง</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ข</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD008</td><td class="border border-slate-200 p-2 text-center">ข</td><td class="border border-slate-200 p-2 text-center">ข</td><td class="border border-slate-200 p-2 text-center">ค</td><td class="border border-slate-200 p-2 text-center">ง</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ง</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD009</td><td class="border border-slate-200 p-2 text-center">ก</td><td class="border border-slate-200 p-2 text-center">ข</td><td class="border border-slate-200 p-2 text-center">ค</td><td class="border border-slate-200 p-2 text-center">ง</td><td class="border border-slate-200 p-2 text-center">ค</td><td class="border border-slate-200 p-2 text-center">ข</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="px-4 py-2.5 bg-slate-50 text-[11px] text-slate-500 border-t border-slate-100 flex items-center justify-between">
+              <span>* กรณีอัปโหลดไฟล์ แถวแรกต้องเป็น <strong>KEY</strong> เพื่อบอกเฉลย | รองรับทั้ง ก, ข, ค, ง และ A, B, C, D</span>
+            </div>
+          </div>
+
+          <!-- ตัวอย่าง 3: อัตนัย -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="bg-amber-50/80 px-4 py-3 border-b border-amber-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <span class="text-xs font-bold text-amber-950 flex items-center gap-2">
+                <i class="fa-solid fa-pen-nib text-amber-600"></i> ตัวอย่างตารางระบบที่ 3: ข้อสอบอัตนัย (แถวแรกต้องเป็น MAX คะแนนเต็ม)
+              </span>
+              <button onclick="downloadTemplate('subjective')" class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+                <i class="fa-solid fa-download"></i> ดาวน์โหลดแม่แบบระบบอัตนัย (.csv)
+              </button>
+            </div>
+            <div class="overflow-x-auto p-4">
+              <table class="w-full text-xs text-left border-collapse border border-slate-200 font-mono">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-700 font-sans">
+                    <th class="border border-slate-200 p-2 text-center w-28">StudentID</th>
+                    <th class="border border-slate-200 p-2 text-center">Item1 (10)</th>
+                    <th class="border border-slate-200 p-2 text-center">Item2 (10)</th>
+                    <th class="border border-slate-200 p-2 text-center">Item3 (15)</th>
+                    <th class="border border-slate-200 p-2 text-center">Item4 (10)</th>
+                    <th class="border border-slate-200 p-2 text-center">Item5 (5)</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-600 font-sans">
+                  <tr class="bg-amber-100/70 font-bold text-amber-950"><td class="border border-slate-200 p-2 text-center">MAX</td><td class="border border-slate-200 p-2 text-center">10</td><td class="border border-slate-200 p-2 text-center">10</td><td class="border border-slate-200 p-2 text-center">15</td><td class="border border-slate-200 p-2 text-center">10</td><td class="border border-slate-200 p-2 text-center">5</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD001</td><td class="border border-slate-200 p-2 text-center">9.5</td><td class="border border-slate-200 p-2 text-center">8.0</td><td class="border border-slate-200 p-2 text-center">14.0</td><td class="border border-slate-200 p-2 text-center">9.0</td><td class="border border-slate-200 p-2 text-center">5.0</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD002</td><td class="border border-slate-200 p-2 text-center">8.0</td><td class="border border-slate-200 p-2 text-center">9.0</td><td class="border border-slate-200 p-2 text-center">13.5</td><td class="border border-slate-200 p-2 text-center">8.5</td><td class="border border-slate-200 p-2 text-center">4.0</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD003</td><td class="border border-slate-200 p-2 text-center">7.5</td><td class="border border-slate-200 p-2 text-center">7.0</td><td class="border border-slate-200 p-2 text-center">12.0</td><td class="border border-slate-200 p-2 text-center">8.0</td><td class="border border-slate-200 p-2 text-center">4.0</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD004</td><td class="border border-slate-200 p-2 text-center">6.0</td><td class="border border-slate-200 p-2 text-center">7.5</td><td class="border border-slate-200 p-2 text-center">10.0</td><td class="border border-slate-200 p-2 text-center">6.5</td><td class="border border-slate-200 p-2 text-center">3.0</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD005</td><td class="border border-slate-200 p-2 text-center">5.0</td><td class="border border-slate-200 p-2 text-center">6.0</td><td class="border border-slate-200 p-2 text-center">9.0</td><td class="border border-slate-200 p-2 text-center">5.0</td><td class="border border-slate-200 p-2 text-center">3.0</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD006</td><td class="border border-slate-200 p-2 text-center">4.5</td><td class="border border-slate-200 p-2 text-center">5.0</td><td class="border border-slate-200 p-2 text-center">8.0</td><td class="border border-slate-200 p-2 text-center">4.0</td><td class="border border-slate-200 p-2 text-center">2.5</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD007</td><td class="border border-slate-200 p-2 text-center">3.0</td><td class="border border-slate-200 p-2 text-center">4.5</td><td class="border border-slate-200 p-2 text-center">6.5</td><td class="border border-slate-200 p-2 text-center">3.0</td><td class="border border-slate-200 p-2 text-center">2.0</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD008</td><td class="border border-slate-200 p-2 text-center">2.0</td><td class="border border-slate-200 p-2 text-center">3.0</td><td class="border border-slate-200 p-2 text-center">5.0</td><td class="border border-slate-200 p-2 text-center">2.0</td><td class="border border-slate-200 p-2 text-center">1.0</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">STD009</td><td class="border border-slate-200 p-2 text-center">1.5</td><td class="border border-slate-200 p-2 text-center">2.0</td><td class="border border-slate-200 p-2 text-center">4.0</td><td class="border border-slate-200 p-2 text-center">1.5</td><td class="border border-slate-200 p-2 text-center">1.0</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="px-4 py-2.5 bg-slate-50 text-[11px] text-slate-500 border-t border-slate-100 flex items-center justify-between">
+              <span>* แถวแรกต้องระบุ <strong>MAX</strong> เพื่อระบุคะแนนเต็มในแต่ละข้อ (แต่ละข้อคะแนนเต็มไม่เท่ากันได้) แถวถัดไปเป็นคะแนนจริง</span>
+            </div>
+          </div>
+
+          <!-- ตัวอย่าง 4: แบบสอบถาม Rating Scale -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="bg-violet-50/80 px-4 py-3 border-b border-violet-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <span class="text-xs font-bold text-violet-950 flex items-center gap-2">
+                <i class="fa-solid fa-square-poll-horizontal text-violet-600"></i> ตัวอย่างตารางระบบที่ 4: แบบสอบถามมาตราส่วนประมาณค่า (Likert Scale 1–5)
+              </span>
+              <button onclick="downloadTemplate('questionnaire')" class="inline-flex items-center gap-1.5 px-3 py-1 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+                <i class="fa-solid fa-download"></i> ดาวน์โหลดแม่แบบแบบสอบถาม (.csv)
+              </button>
+            </div>
+            <div class="overflow-x-auto p-4">
+              <table class="w-full text-xs text-left border-collapse border border-slate-200 font-mono">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-700 font-sans">
+                    <th class="border border-slate-200 p-2 text-center w-28">RespondentID</th>
+                    <th class="border border-slate-200 p-2 text-center">Item1</th>
+                    <th class="border border-slate-200 p-2 text-center">Item2</th>
+                    <th class="border border-slate-200 p-2 text-center">Item3</th>
+                    <th class="border border-slate-200 p-2 text-center">Item4</th>
+                    <th class="border border-slate-200 p-2 text-center">Item5</th>
+                    <th class="border border-slate-200 p-2 text-center">Item6</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-600 font-sans">
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">R001</td><td class="border border-slate-200 p-2 text-center">5</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">5</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">5</td><td class="border border-slate-200 p-2 text-center">4</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">R002</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">3</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">4</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">R003</td><td class="border border-slate-200 p-2 text-center">5</td><td class="border border-slate-200 p-2 text-center">5</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">5</td><td class="border border-slate-200 p-2 text-center">5</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">R004</td><td class="border border-slate-200 p-2 text-center">3</td><td class="border border-slate-200 p-2 text-center">3</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">3</td><td class="border border-slate-200 p-2 text-center">3</td><td class="border border-slate-200 p-2 text-center">3</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">R005</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">5</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">4</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">R006</td><td class="border border-slate-200 p-2 text-center">2</td><td class="border border-slate-200 p-2 text-center">2</td><td class="border border-slate-200 p-2 text-center">3</td><td class="border border-slate-200 p-2 text-center">2</td><td class="border border-slate-200 p-2 text-center">2</td><td class="border border-slate-200 p-2 text-center">3</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">R007</td><td class="border border-slate-200 p-2 text-center">5</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">5</td><td class="border border-slate-200 p-2 text-center">5</td><td class="border border-slate-200 p-2 text-center">4</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">R008</td><td class="border border-slate-200 p-2 text-center">3</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">3</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">3</td><td class="border border-slate-200 p-2 text-center">3</td></tr>
+                  <tr><td class="border border-slate-200 p-2 text-center font-medium">R009</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">5</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">4</td><td class="border border-slate-200 p-2 text-center">5</td><td class="border border-slate-200 p-2 text-center">4</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="px-4 py-2.5 bg-slate-50 text-[11px] text-slate-500 border-t border-slate-100 flex items-center justify-between">
+              <span>* กรอกคะแนนระดับความคิดเห็น 1 ถึง 5 (1 = น้อยที่สุด, 5 = มากที่สุด)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- สรุปขั้นตอนการใช้งานระบบ -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3">
+          <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-circle-play text-indigo-600"></i> สรุปขั้นตอนการใช้งานระบบทั้ง 4 ขั้น
+          </h3>
+          <ol class="text-xs text-slate-600 space-y-2 list-decimal list-inside leading-relaxed">
+            <li><strong>เลือกเมนูระบบงาน</strong> ทางแถบซ้ายมือตามประเภทเครื่องมือที่ต้องการวิเคราะห์[cite: 26]</li>
+            <li><strong>เลือกวิธีการนำเข้าข้อมูล:</strong> นำเข้าผ่าน Google Sheets (ที่เชื่อมกับ Google Forms) หรือ อัปโหลดไฟล์ Excel / CSV จากเครื่อง</li>
+            <li><strong>ตรวจสอบความถูกต้อง:</strong> ดูผลการวิเคราะห์ระดับรายข้อและภาพรวมทั้งฉบับผ่านหน้าจอ Interactive Dashboard[cite: 1, 4]</li>
+            <li><strong>พิมพ์รายงาน PDF ทางการ:</strong> กดปุ่ม "พิมพ์รายงาน PDF" กรอกข้อมูลหัวเรื่องราชการ และกดบันทึกเป็นเอกสารพร้อมลงนามได้ทันที</li>
+          </ol>
+        </div>
+
+      </div>
+
+      <!-- 2. View: IFrame โหลดระบบย่อยทั้ง 4 ระบบ -->
+      <div id="view-iframe-container" class="w-full h-full hidden">
+        <iframe id="subAppFrame" class="w-full h-full border-0" src="" allow="clipboard-read; clipboard-write"></iframe>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= สคริปต์ควบคุมการทำงานและดาวน์โหลดแม่แบบ ================= -->
+  <script>
+    const APP_URLS = {
+      ioc: "https://script.google.com/macros/s/AKfycbwf39pxq6enAY-MR2nY2SZ11NsQOVOn2U6mTH6A7hX6wiwUQ4_4A1DLsX9HcGkFagIz_Q/exec",
+      objective: "https://script.google.com/macros/s/AKfycbxHOU5eK4AKLjJzrJVJ1VXqTVlEU5EegKVyumUcTDY1mmFg7ycFUwEOSA8K9H8X0eM/exec",
+      subjective: "https://script.google.com/macros/s/AKfycbysK8LeY-SpyDx1UlcXbpo739jsl7xVxux35UJ9oUzVnUCT3GIOeBhIV9JL4v-yUX50/exec",
+      questionnaire: "https://script.google.com/macros/s/AKfycbxNqqQDDxH0glGLWMNEVvh101DVVo493joCInA_DQCDXcGJJA8OCi8HuoaPmeWUF5rk/exec"
+    };
+
+    const TITLES = {
+      guide: '<i class="fa-solid fa-book-open text-amber-500"></i> คู่มือการใช้งานระบบและการวัดผล',
+      ioc: '<i class="fa-solid fa-clipboard-check text-teal-600"></i> 1. ระบบประเมินความสอดคล้องเชิงเนื้อหา (IOC Analysis WebApp)',
+      objective: '<i class="fa-solid fa-square-poll-vertical text-blue-600"></i> 2. ระบบวิเคราะห์คุณภาพข้อสอบปรนัย (Item & Test Analysis System)',
+      subjective: '<i class="fa-solid fa-pen-nib text-amber-600"></i> 3. ระบบวิเคราะห์คุณภาพข้อสอบอัตนัย (Subjective Item Analysis WebApp)',
+      questionnaire: '<i class="fa-solid fa-square-poll-horizontal text-violet-600"></i> 4. ระบบวิเคราะห์คุณภาพแบบสอบถาม (Rating Scale Analysis WebApp)'
+    };
+
+    function switchTab(tabKey) {
+      document.querySelectorAll('#menuList .menu-btn').forEach(btn => {
+        btn.classList.remove('active-nav-btn');
+        btn.classList.add('hover:bg-white/10', 'text-slate-300');
+      });
+      const activeBtn = document.getElementById('nav-' + tabKey);
+      if (activeBtn) {
+        activeBtn.classList.add('active-nav-btn');
+        activeBtn.classList.remove('hover:bg-white/10', 'text-slate-300');
+      }
+
+      document.getElementById('currentViewTitle').innerHTML = TITLES[tabKey];
+
+      const extBtn = document.getElementById('externalLinkBtn');
+      const guideView = document.getElementById('view-guide');
+      const frameContainer = document.getElementById('view-iframe-container');
+      const iframe = document.getElementById('subAppFrame');
+
+      if (tabKey === 'guide') {
+        guideView.classList.remove('hidden');
+        frameContainer.classList.add('hidden');
+        extBtn.classList.add('hidden');
+        iframe.src = "";
+      } else {
+        guideView.classList.add('hidden');
+        frameContainer.classList.remove('hidden');
+        extBtn.classList.remove('hidden');
+        extBtn.href = APP_URLS[tabKey];
+        iframe.src = APP_URLS[tabKey];
+      }
+    }
+
+    function setButtonSize(size) {
+      document.body.classList.remove('btn-size-sm', 'btn-size-md', 'btn-size-lg');
+      document.body.classList.add('btn-size-' + size);
+
+      ['sm', 'md', 'lg'].forEach(s => {
+        const b = document.getElementById('btnSize' + s.charAt(0).toUpperCase() + s.slice(1));
+        if (s === size) {
+          b.className = "px-2 py-0.5 rounded bg-white/30 text-white font-bold transition";
+        } else {
+          b.className = "px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-300 transition";
+        }
+      });
+    }
+
+    function setTheme(theme) {
+      document.body.classList.remove('theme-indigo', 'theme-emerald', 'theme-violet');
+      document.body.classList.add('theme-' + theme);
+    }
+
+    // ฟังก์ชันดาวน์โหลดแม่แบบ CSV 4 ระบบ (พร้อม UTF-8 BOM)
+    function downloadTemplate(type) {
+      let csvContent = "\uFEFF";
+      let fileName = "";
+
+      if (type === 'ioc') {
+        fileName = "ioc_template_sample.csv";
+        csvContent += "ExpertName,Item1,Item2,Item3,Item4,Item5,Item6\n"
+          + "ผู้เชี่ยวชาญคนที่ 1,1,1,1,0,1,1\n"
+          + "ผู้เชี่ยวชาญคนที่ 2,1,1,0,1,1,-1\n"
+          + "ผู้เชี่ยวชาญคนที่ 3,1,1,1,1,1,0\n"
+          + "ผู้เชี่ยวชาญคนที่ 4,1,0,1,0,1,-1\n"
+          + "ผู้เชี่ยวชาญคนที่ 5,1,1,1,1,0,1\n"
+          + "ผู้เชี่ยวชาญคนที่ 6,1,1,1,1,1,0\n"
+          + "ผู้เชี่ยวชาญคนที่ 7,1,0,1,1,1,-1\n"
+          + "ผู้เชี่ยวชาญคนที่ 8,1,1,1,0,1,0\n"
+          + "ผู้เชี่ยวชาญคนที่ 9,1,1,1,1,1,1\n";
+      } else if (type === 'objective') {
+        fileName = "objective_test_template_sample.csv";
+        csvContent += "StudentID,Item1,Item2,Item3,Item4,Item5,Item6\n"
+          + "KEY,ก,ข,ค,ง,ก,ข\n"
+          + "STD001,ก,ข,ค,ง,ก,ข\n"
+          + "STD002,ก,ข,ค,ง,ข,ข\n"
+          + "STD003,ก,ข,ง,ง,ก,ค\n"
+          + "STD004,ง,ข,ค,ก,ง,ข\n"
+          + "STD005,ค,ก,ข,ง,ค,ก\n"
+          + "STD006,ก,ข,ค,ง,ก,ข\n"
+          + "STD007,ก,ข,ค,ง,ก,ข\n"
+          + "STD008,ข,ข,ค,ง,ก,ง\n"
+          + "STD009,ก,ข,ค,ง,ค,ข\n";
+      } else if (type === 'subjective') {
+        fileName = "subjective_test_template_sample.csv";
+        csvContent += "StudentID,Item1,Item2,Item3,Item4,Item5\n"
+          + "MAX,10,10,15,10,5\n"
+          + "STD001,9.5,8,14,9,5\n"
+          + "STD002,8,9,13.5,8.5,4\n"
+          + "STD003,7.5,7,12,8,4\n"
+          + "STD004,6,7.5,10,6.5,3\n"
+          + "STD005,5,6,9,5,3\n"
+          + "STD006,4.5,5,8,4,2.5\n"
+          + "STD007,3,4.5,6.5,3,2\n"
+          + "STD008,2,3,5,2,1\n"
+          + "STD009,1.5,2,4,1.5,1\n";
+      } else if (type === 'questionnaire') {
+        fileName = "questionnaire_rating_scale_template_sample.csv";
+        csvContent += "RespondentID,Item1,Item2,Item3,Item4,Item5,Item6\n"
+          + "R001,5,4,5,4,5,4\n"
+          + "R002,4,4,4,3,4,4\n"
+          + "R003,5,5,4,4,5,5\n"
+          + "R004,3,3,4,3,3,3\n"
+          + "R005,4,4,5,4,4,4\n"
+          + "R006,2,2,3,2,2,3\n"
+          + "R007,5,4,4,5,5,4\n"
+          + "R008,3,4,3,4,3,3\n"
+          + "R009,4,5,4,4,5,4\n";
+      }
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
